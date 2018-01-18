@@ -1,8 +1,8 @@
-﻿<Application
-    x:Class="AppCenterFestival.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AppCenterFestival"
-    RequestedTheme="Light">
+﻿<windows:PrismApplication xmlns:windows="using:Prism.Windows"
+                          x:Class="AppCenterFestival.App"
+                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:local="using:AppCenterFestival"
+                          RequestedTheme="Light">
 
-</Application>
+</windows:PrismApplication>
