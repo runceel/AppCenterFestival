@@ -5,14 +5,112 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:mvvm="using:Prism.Windows.Mvvm"
+      xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+      xmlns:models="using:AppCenterFestival.Models"
       mvvm:ViewModelLocator.AutoWireViewModel="True"
-      mc:Ignorable="d">
+      mc:Ignorable="d"
+      x:Name="root">
+    <Page.Resources>
+        <Style x:Key="bladeStyle"
+               TargetType="controls:BladeItem">
+            <Setter Property="Width"
+                    Value="450" />
+            <Setter Property="Background"
+                    Value="White" />
+            <Setter Property="Opacity"
+                    Value="0.8" />
+        </Style>
+    </Page.Resources>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <controls:BladeView HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            BladeMode="{x:Bind ViewModel.BladeMode.Value, Mode=OneWay}">
+            <controls:BladeItem TitleBarVisibility="Collapsed"
+                                Style="{StaticResource bladeStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{x:Bind ViewModel.NewDocumentTitle.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"
+                             Margin="5" />
+                    <AppBarButton Icon="Add"
+                                  Label="追加"
+                                  Command="{x:Bind ViewModel.AddDocumentCommand}"
+                                  Grid.Column="1" />
+                    <ListView ItemsSource="{x:Bind ViewModel.Documents}"
+                              SelectedItem="{x:Bind ViewModel.SelectedDocument.Value, Mode=TwoWay}"
+                              Grid.Row="1"
+                              Grid.ColumnSpan="2">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment"
+                                        Value="Stretch" />
+                                <Setter Property="VerticalContentAlignment"
+                                        Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Document">
+                                <controls:SlidableListItem RightIcon="Remove"
+                                                           RightCommand="{Binding DataContext.RemoveDocumentCommand, ElementName=root}"
+                                                           RightCommandParameter="{x:Bind}">
+                                    <TextBlock Text="{x:Bind Title.Value, Mode=OneWay}"
+                                               VerticalAlignment="Center" />
+                                </controls:SlidableListItem>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </controls:BladeItem>
 
-    <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBox Text="{x:Bind ViewModel.Input.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 Margin="5" />
-        <TextBlock Text="{x:Bind ViewModel.Output.Value, Mode=OneWay}"
-                   Margin="5"
-                   Style="{ThemeResource BodyTextBlockStyle}" />
-    </StackPanel>
+            <controls:BladeItem IsOpen="{x:Bind ViewModel.IsEditorBladeOpen.Value, Mode=OneWay}"
+                                TitleBarVisibility="Collapsed"
+                                Style="{StaticResource bladeStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{x:Bind ViewModel.SelectedDocument.Value.Title.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"
+                             Margin="5" />
+                    <AppBarToggleButton Icon="Preview"
+                                        Label="Preview"
+                                        Command="{x:Bind ViewModel.SwitchPreviewCommand}"
+                                        IsChecked="{x:Bind ViewModel.IsPreviewOpen.Value, Mode=OneWay}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Stretch"
+                                        Grid.Column="1" />
+                    <TextBox Text="{x:Bind ViewModel.SelectedDocument.Value.Content.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             ScrollViewer.HorizontalScrollMode="Disabled"
+                             Grid.Row="1"
+                             Grid.ColumnSpan="2"
+                             TextWrapping="Wrap" />
+                </Grid>
+            </controls:BladeItem>
+
+            <controls:BladeItem IsOpen="{x:Bind ViewModel.IsPreviewOpen.Value, Mode=OneWay}"
+                                TitleBarVisibility="Collapsed"
+                                Style="{StaticResource bladeStyle}">
+                <ScrollViewer>
+                    <controls:MarkdownTextBlock Text="{x:Bind ViewModel.PreviewMarkdownText.Value, Mode=OneWay}"
+                                                Margin="8"
+                                                Header1Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                                                Foreground="Black"
+                                                LinkForeground="BlueViolet" />
+                </ScrollViewer>
+            </controls:BladeItem>
+        </controls:BladeView>
+    </Grid>
 </Page>

@@ -1,29 +1,90 @@
-﻿using Prism.Windows.Mvvm;
+﻿using AppCenterFestival.Models;
+using Microsoft.Toolkit.Uwp.UI.Controls;
+using Prism.Windows.Mvvm;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
 namespace AppCenterFestival.ViewModels
 {
     public class MainPageViewModel : ViewModelBase
     {
-        public ReactivePropertySlim<string> Input { get; }
+        public DocumentManager DocumentManager { get; }
 
-        public ReadOnlyReactivePropertySlim<string> Output { get; }
+        public ReadOnlyObservableCollection<Document> Documents => DocumentManager.Documents;
 
-        public MainPageViewModel()
+        public ReactivePropertySlim<string> NewDocumentTitle { get; }
+
+        public ReactiveCommand AddDocumentCommand { get; }
+
+        public ReactivePropertySlim<Document> SelectedDocument { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsEditorBladeOpen { get; }
+
+        public ReadOnlyReactivePropertySlim<string> PreviewMarkdownText { get; }
+
+        public ReadOnlyReactivePropertySlim<BladeMode> BladeMode { get; }
+
+        private BooleanNotifier IsPreviewOpenNotifier { get; } = new BooleanNotifier();
+
+        public ReadOnlyReactivePropertySlim<bool> IsPreviewOpen { get; }
+
+        public ReactiveCommand SwitchPreviewCommand { get; }
+
+        public ReactiveCommand<Document> RemoveDocumentCommand { get; }
+
+        public MainPageViewModel(DocumentManager documentManager)
         {
-            Input = new ReactivePropertySlim<string>("");
-            Output = Input
-                .Delay(TimeSpan.FromSeconds(1))
-                .Select(x => x.ToUpper())
+            this.DocumentManager = documentManager;
+
+            NewDocumentTitle = new ReactivePropertySlim<string>();
+            AddDocumentCommand = NewDocumentTitle
+                .Select(x => !string.IsNullOrEmpty(x))
+                .ToReactiveCommand()
+                .WithSubscribe(() =>
+                {
+                    DocumentManager.AddDocument(NewDocumentTitle.Value);
+                    NewDocumentTitle.Value = "";
+                });
+
+            SelectedDocument = new ReactivePropertySlim<Document>();
+            IsEditorBladeOpen = SelectedDocument
+                .Select(x => x != null)
+                .ToReadOnlyReactivePropertySlim();
+
+            BladeMode = DocumentManager.DocumentEditMode
+                .Select(x => x == DocumentEditMode.Normal ? Microsoft.Toolkit.Uwp.UI.Controls.BladeMode.Normal : Microsoft.Toolkit.Uwp.UI.Controls.BladeMode.Fullscreen)
+                .ToReadOnlyReactivePropertySlim();
+
+            PreviewMarkdownText = SelectedDocument
+                .SelectMany(x => x?.Content ?? Observable.Return(""))
+                .Throttle(TimeSpan.FromSeconds(1))
                 .ObserveOnUIDispatcher()
                 .ToReadOnlyReactivePropertySlim();
+            PreviewMarkdownText.Subscribe(x => Debug.WriteLine($"markdown: {x}"));
+
+            IsPreviewOpen = Observable.CombineLatest(
+                IsPreviewOpenNotifier,
+                IsEditorBladeOpen)
+                .Select(x => x.All(y => y))
+                .ToReadOnlyReactivePropertySlim();
+
+            SwitchPreviewCommand = new ReactiveCommand()
+                .WithSubscribe(() => IsPreviewOpenNotifier.SwitchValue());
+
+            RemoveDocumentCommand = new ReactiveCommand<Document>()
+                .WithSubscribe(x => DocumentManager.RemoveDocument(x.Id.Value));
+
         }
+
     }
 }

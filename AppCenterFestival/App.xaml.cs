@@ -1,4 +1,7 @@
-﻿using Prism.Windows;
+﻿using AppCenterFestival.Models;
+using AppCenterFestival.Views;
+using Prism.Unity.Windows;
+using Prism.Windows;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,13 +19,14 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Practices.Unity;
 
 namespace AppCenterFestival
 {
     /// <summary>
     /// 既定の Application クラスを補完するアプリケーション固有の動作を提供します。
     /// </summary>
-    sealed partial class App : PrismApplication
+    sealed partial class App : PrismUnityApplication
     {
         /// <summary>
         /// 単一アプリケーション オブジェクトを初期化します。これは、実行される作成したコードの
@@ -33,10 +37,24 @@ namespace AppCenterFestival
             this.InitializeComponent();
         }
 
-        protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)
+        protected override async Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)
         {
+            await Container.Resolve<DocumentManager>().LoadDataAsync();
             NavigationService.Navigate("Main", null);
-            return Task.CompletedTask;
+        }
+
+        protected override void ConfigureContainer()
+        {
+            base.ConfigureContainer();
+
+            Container.RegisterType<DocumentManager>(new ContainerControlledLifetimeManager());
+        }
+
+        protected override UIElement CreateShell(Frame rootFrame)
+        {
+            var shell = Container.Resolve<Shell>();
+            shell.FrameHost.Content = rootFrame;
+            return shell;
         }
     }
 }
