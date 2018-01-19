@@ -1,13 +1,13 @@
-﻿$path = Split-Path -Parent $MyInvocation.MyCommand.Path
-Join-Path -Path $path -ChildPath "AppCenterFestival" | Set-Location
+﻿$path = Join-Path -Path $env:APPCENTER_SOURCE_DIRECTORY -ChildPath "AppCenterFestival"
+$inputFile = Join-Path -Path $path -ChildPath "Keys_Sample.cs"
+$outputFile = Join-Path -Path $path -ChildPath "Keys.cs"
 
-if (Test-Path "Keys.cs") {
-    Remove-Item "Keys.cs"
+
+if (Test-Path $outputFile) {
+    Remove-Item $outputFile
 }
 
-Get-Content "KeysSample.cs" | 
+Get-Content $inputFile | 
     foreach { $_ -creplace "Keys_Sample", "Keys" } | 
     foreach { $_ -creplace "#APP_CENTER_KEY#", $env:APP_CENTER_KEY } |
-    Out-File "Keys.cs" -Encoding "utf8" -Append
-
-Set-Location $path
+    Out-File $outputFile -Encoding "utf8" -Append
