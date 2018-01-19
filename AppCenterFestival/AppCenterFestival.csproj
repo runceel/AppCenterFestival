@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Keys.cs" />
+    <Compile Include="KeysSample.cs" />
     <Compile Include="Models\Document.cs" />
     <Compile Include="Models\DocumentEditMode.cs" />
     <Compile Include="Models\DocumentManager.cs" />
@@ -113,6 +114,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="appcenter-pre-build.ps1" />
     <None Include="AppCenterFestival_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
