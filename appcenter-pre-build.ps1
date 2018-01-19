@@ -1,5 +1,5 @@
 ﻿$path = Join-Path -Path $env:APPCENTER_SOURCE_DIRECTORY -ChildPath "AppCenterFestival"
-$inputFile = Join-Path -Path $path -ChildPath "Keys_Sample.cs"
+$inputFile = Join-Path -Path $path -ChildPath "KeysSample.cs"
 $outputFile = Join-Path -Path $path -ChildPath "Keys.cs"
 
 

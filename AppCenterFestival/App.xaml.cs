@@ -24,6 +24,8 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.AppCenter.Distribute;
+using Prism.Logging;
+using AppCenterFestival.Logger;
 
 namespace AppCenterFestival
 {
@@ -64,6 +66,11 @@ namespace AppCenterFestival
             var shell = Container.Resolve<Shell>();
             shell.FrameHost.Content = rootFrame;
             return shell;
+        }
+
+        protected override ILoggerFacade CreateLogger()
+        {
+            return new AppCenterLogger();
         }
     }
 }

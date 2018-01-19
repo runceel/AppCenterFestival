@@ -72,17 +72,17 @@ namespace AppCenterFestival.ViewModels
                 .ToReadOnlyReactivePropertySlim();
             PreviewMarkdownText.Subscribe(x => Debug.WriteLine($"markdown: {x}"));
 
-            IsPreviewOpen = Observable.CombineLatest(
-                IsPreviewOpenNotifier,
-                IsEditorBladeOpen)
-                .Select(x => x.All(y => y))
-                .ToReadOnlyReactivePropertySlim();
+            IsPreviewOpen = IsPreviewOpenNotifier.ToReadOnlyReactivePropertySlim();
 
             SwitchPreviewCommand = new ReactiveCommand()
                 .WithSubscribe(() => IsPreviewOpenNotifier.SwitchValue());
 
             RemoveDocumentCommand = new ReactiveCommand<Document>()
-                .WithSubscribe(x => DocumentManager.RemoveDocument(x.Id.Value));
+                .WithSubscribe(x =>
+                {
+                    DocumentManager.RemoveDocument(x.Id.Value);
+                    IsPreviewOpenNotifier.TurnOff();
+                });
 
         }
 
