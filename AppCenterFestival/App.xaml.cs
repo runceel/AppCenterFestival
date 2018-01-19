@@ -20,6 +20,10 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Practices.Unity;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.AppCenter.Distribute;
 
 namespace AppCenterFestival
 {
@@ -35,6 +39,11 @@ namespace AppCenterFestival
         public App()
         {
             this.InitializeComponent();
+
+            AppCenter.Start(Keys.AppCenterKey,
+                typeof(Analytics),
+                typeof(Crashes),
+                typeof(Distribute));
         }
 
         protected override async Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)
