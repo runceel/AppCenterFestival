@@ -1,5 +1,7 @@
-﻿using AppCenterFestival.Models;
+﻿using AppCenterFestival.Logger;
+using AppCenterFestival.Models;
 using Microsoft.Toolkit.Uwp.UI.Controls;
+using Prism.Logging;
 using Prism.Windows.Mvvm;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -19,6 +21,7 @@ namespace AppCenterFestival.ViewModels
     public class MainPageViewModel : ViewModelBase
     {
         public DocumentManager DocumentManager { get; }
+        private IAppCenterLogger AppCenterLogger { get; }
 
         public ReadOnlyObservableCollection<Document> Documents => DocumentManager.Documents;
 
@@ -42,17 +45,23 @@ namespace AppCenterFestival.ViewModels
 
         public ReactiveCommand<Document> RemoveDocumentCommand { get; }
 
-        public MainPageViewModel(DocumentManager documentManager)
+        public MainPageViewModel(DocumentManager documentManager, IAppCenterLogger appCenterLogger)
         {
             this.DocumentManager = documentManager;
-
+            this.AppCenterLogger = appCenterLogger;
             NewDocumentTitle = new ReactivePropertySlim<string>();
             AddDocumentCommand = NewDocumentTitle
                 .Select(x => !string.IsNullOrEmpty(x))
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
+                    if (NewDocumentTitle.Value == "野菜")
+                    {
+                        throw new InvalidOperationException("野菜 is invalid");
+                    }
+
                     DocumentManager.AddDocument(NewDocumentTitle.Value);
+                    AppCenterLogger.TrackEvent("Document created", ("name", NewDocumentTitle.Value));
                     NewDocumentTitle.Value = "";
                 });
 
@@ -70,7 +79,6 @@ namespace AppCenterFestival.ViewModels
                 .Throttle(TimeSpan.FromSeconds(1))
                 .ObserveOnUIDispatcher()
                 .ToReadOnlyReactivePropertySlim();
-            PreviewMarkdownText.Subscribe(x => Debug.WriteLine($"markdown: {x}"));
 
             IsPreviewOpen = IsPreviewOpenNotifier.ToReadOnlyReactivePropertySlim();
 
@@ -81,6 +89,7 @@ namespace AppCenterFestival.ViewModels
                 .WithSubscribe(x =>
                 {
                     DocumentManager.RemoveDocument(x.Id.Value);
+                    AppCenterLogger.TrackEvent("Document removed", ("name", x.Title.Value), ("content", x.Content.Value));
                     IsPreviewOpenNotifier.TurnOff();
                 });
 

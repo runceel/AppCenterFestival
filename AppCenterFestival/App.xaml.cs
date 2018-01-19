@@ -59,6 +59,7 @@ namespace AppCenterFestival
             base.ConfigureContainer();
 
             Container.RegisterType<DocumentManager>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IAppCenterLogger, AppCenterLogger>(new ContainerControlledLifetimeManager());
         }
 
         protected override UIElement CreateShell(Frame rootFrame)
@@ -66,11 +67,6 @@ namespace AppCenterFestival
             var shell = Container.Resolve<Shell>();
             shell.FrameHost.Content = rootFrame;
             return shell;
-        }
-
-        protected override ILoggerFacade CreateLogger()
-        {
-            return new AppCenterLogger();
         }
     }
 }

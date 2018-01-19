@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace AppCenterFestival.Logger
 {
-    public class AppCenterLogger : ILoggerFacade
+    public interface IAppCenterLogger
     {
-        public void Log(string message, Category category, Priority priority)
+        void TrackEvent(string name, params (string key, string value)[] properties);
+    }
+
+    public class AppCenterLogger : IAppCenterLogger
+    {
+        public void TrackEvent(string name, params (string key, string value)[] properties)
         {
-            Analytics.TrackEvent(message, new Dictionary<string, string>
-            {
-                ["category"] = category.ToString(),
-                ["priority"] = priority.ToString(),
-            });
+            Analytics.TrackEvent(name, properties.ToDictionary(x => x.key, x => x.value));
         }
     }
 }
