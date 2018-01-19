@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="1DFB9DCD-FDCD-486E-A78F-5139831E7EBC" Publisher="CN=kaota" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="0670590c-c79c-447c-b726-0987cff00ad3" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="45014okazuki.appcenteredu" Publisher="CN=57A8C5FA-395A-4109-91A0-CF1B93556B5D" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="1bc61d86-572d-4d9a-9486-f62ced0f44f5" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>AppCenterFestival</DisplayName>
-    <PublisherDisplayName>kaota</PublisherDisplayName>
+    <DisplayName>appcenteredu</DisplayName>
+    <PublisherDisplayName>okazuki</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="AppCenterFestival.App">
-      <uap:VisualElements DisplayName="AppCenterFestival" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="AppCenterFestival" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="appcenteredu" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="AppCenterFestival" BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />

@@ -1,31 +1,21 @@
 ﻿using AppCenterFestival.Models;
 using AppCenterFestival.Views;
 using Prism.Unity.Windows;
-using Prism.Windows;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Microsoft.Practices.Unity;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.AppCenter.Distribute;
-using Prism.Logging;
 using AppCenterFestival.Logger;
+using Microsoft.AppCenter.Push;
+using AppCenterFestival.Events;
+using Reactive.Bindings;
+using System.Reactive.Concurrency;
 
 namespace AppCenterFestival
 {
@@ -45,12 +35,27 @@ namespace AppCenterFestival
             AppCenter.Start(Keys.AppCenterKey,
                 typeof(Analytics),
                 typeof(Crashes),
-                typeof(Distribute));
+                typeof(Distribute),
+                typeof(Push));
+
+            Push.PushNotificationReceived += this.Push_PushNotificationReceived;
+        }
+
+        private void Push_PushNotificationReceived(object sender, PushNotificationReceivedEventArgs e)
+        {
+            if (e.CustomData.ContainsKey("theme"))
+            {
+                EventAggregator.GetEvent<NotifyEvent>()
+                    .Publish($"{e.CustomData["theme"]} について書いてね！");
+                Container.Resolve<DocumentManager>().AddDocument(e.CustomData["theme"]);
+            }
         }
 
         protected override async Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)
         {
             await Container.Resolve<DocumentManager>().LoadDataAsync();
+
+            Push.CheckLaunchedFromNotification(args);
             NavigationService.Navigate("Main", null);
         }
 

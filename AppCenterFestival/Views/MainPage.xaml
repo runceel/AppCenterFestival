@@ -112,5 +112,7 @@
                 </ScrollViewer>
             </controls:BladeItem>
         </controls:BladeView>
+
+        <controls:InAppNotification x:Name="inAppNotification" />
     </Grid>
 </Page>

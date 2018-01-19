@@ -1,4 +1,8 @@
-﻿using AppCenterFestival.ViewModels;
+﻿using AppCenterFestival.Events;
+using AppCenterFestival.ViewModels;
+using Microsoft.Practices.ServiceLocation;
+using Prism.Events;
+using Prism.Windows.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,9 +29,29 @@ namespace AppCenterFestival.Views
     {
         private MainPageViewModel ViewModel => (MainPageViewModel)DataContext;
 
+        private IEventAggregator EventAggregator { get; }
+
         public MainPage()
         {
             this.InitializeComponent();
+            EventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            EventAggregator.GetEvent<NotifyEvent>()
+                .Unsubscribe(NotifyEventReceived);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            EventAggregator.GetEvent<NotifyEvent>()
+                .Subscribe(NotifyEventReceived, ThreadOption.UIThread);
+        }
+
+        private void NotifyEventReceived(string message)
+        {
+            inAppNotification.Show(message, 5000);
         }
     }
 }

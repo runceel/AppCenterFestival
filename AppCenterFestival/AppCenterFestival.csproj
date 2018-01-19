@@ -17,8 +17,8 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>AppCenterFestival_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>9481048DE5CDF243FB8935730C3F223338AE9009</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>AppCenterFestival_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>AFCD5ED1B181ECFAAE326918F1DF40A740324684</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -96,6 +96,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Events\NotifyEvent.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="KeysSample.cs" />
     <Compile Include="Logger\AppCenterLogger.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Models\DocumentEditMode.cs" />
     <Compile Include="Models\DocumentManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\ObservableCollectionExtensions.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
@@ -116,9 +118,11 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="AppCenterFestival_StoreKey.pfx" />
     <None Include="AppCenterFestival_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -142,6 +146,9 @@
       <Version>1.1.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AppCenter.Distribute">
+      <Version>1.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AppCenter.Push">
       <Version>1.1.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">

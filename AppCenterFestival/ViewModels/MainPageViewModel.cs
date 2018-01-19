@@ -1,6 +1,9 @@
-﻿using AppCenterFestival.Logger;
+﻿using AppCenterFestival.Events;
+using AppCenterFestival.Logger;
 using AppCenterFestival.Models;
+using AppCenterFestival.Utils;
 using Microsoft.Toolkit.Uwp.UI.Controls;
+using Prism.Events;
 using Prism.Logging;
 using Prism.Windows.Mvvm;
 using Reactive.Bindings;
@@ -11,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +26,9 @@ namespace AppCenterFestival.ViewModels
     {
         public DocumentManager DocumentManager { get; }
         private IAppCenterLogger AppCenterLogger { get; }
+        private IEventAggregator EventAggregator { get; }
 
-        public ReadOnlyObservableCollection<Document> Documents => DocumentManager.Documents;
+        public ReadOnlyObservableCollection<Document> Documents { get; }
 
         public ReactivePropertySlim<string> NewDocumentTitle { get; }
 
@@ -45,10 +50,15 @@ namespace AppCenterFestival.ViewModels
 
         public ReactiveCommand<Document> RemoveDocumentCommand { get; }
 
-        public MainPageViewModel(DocumentManager documentManager, IAppCenterLogger appCenterLogger)
+        public MainPageViewModel(DocumentManager documentManager, IAppCenterLogger appCenterLogger, IEventAggregator eventAggregator)
         {
             this.DocumentManager = documentManager;
             this.AppCenterLogger = appCenterLogger;
+            this.EventAggregator = eventAggregator;
+
+            Documents = DocumentManager.Documents
+                .ToReadOnlyReactiveCollectionForCurrentContext();
+
             NewDocumentTitle = new ReactivePropertySlim<string>();
             AddDocumentCommand = NewDocumentTitle
                 .Select(x => !string.IsNullOrEmpty(x))
@@ -91,6 +101,9 @@ namespace AppCenterFestival.ViewModels
                     DocumentManager.RemoveDocument(x.Id.Value);
                     AppCenterLogger.TrackEvent("Document removed", ("name", x.Title.Value), ("content", x.Content.Value));
                     IsPreviewOpenNotifier.TurnOff();
+
+                    EventAggregator.GetEvent<NotifyEvent>()
+                        .Publish($"{x.Title.Value} を削除しました。");
                 });
 
         }
